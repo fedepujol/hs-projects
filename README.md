@@ -1,0 +1,2 @@
+# hs-projects
+Haskell Learning
