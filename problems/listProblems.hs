@@ -44,6 +44,7 @@ myLength' = sum . map (\_ -> 1)
 myReverse :: [a] -> [a]
 myReverse = foldl (flip (:)) []
 
+{-Solucion de la pagina-}
 myReverse' :: [a] -> [a]
 myReverse' ls = reverser ls []
   where 
@@ -54,6 +55,69 @@ myReverse' ls = reverser ls []
 palindrome :: Eq a => [a] -> Bool
 palindrome ls = ls == reverse ls
 
+{-Soluciones de la pagina-}
 palindrome' [] = True
 palindrome' [_] = True
 palindrome' ls = (head ls) == (last ls) && (palindrome' $ init $ tail ls)
+
+{- Problem 7 Flatten a list o list-}
+{-Nota no pude sacar la manera y las soluciones son las que me parecieron que iba a entender-}
+data NestedList a = Elem a | List [NestedList a]
+
+flatten :: NestedList a -> [a]
+flatten (Elem x) = [x]
+flatten (List (x:xs)) = flatten x ++ flatten (List xs)
+flatten (List []) = []
+
+flatten' :: NestedList a -> [a]
+flatten' (Elem x) = [x]
+flatten' (List xs) = foldr (++) [] $ map flatten' xs
+
+{- Problem 8 (Remove consecutive duplicates elements) -}
+{- Nota (esta manera deja nada mas los elementos unicos)-}
+compress :: Eq a => [a] -> [a]
+compress [] = []
+compress (x:xs)
+  | x `elem` xs = compress xs
+  | otherwise = [x] ++ (compress xs)
+
+{- Nota (esta hace lo que quiere el enunciado)-}
+compress' :: Eq a => [a] -> [a]
+compress' [] = []
+compress' [x] = [x]
+compress' (x:xs)
+  | x == (head xs) = compress' xs
+  | otherwise = [x] ++ (compress' xs)
+
+{-Soluciones de la pagina-}
+compress'' :: Eq a => [a] -> [a]
+compress'' = map head . group
+
+compress''' :: Eq a => [a] -> [a]
+compress''' x = foldr (\a b -> if a == (head b) then b else a:b) [head x] x
+
+{-Problem 9 (crear una lista de lista de elementos duplicados manteniendo su orden original)-}
+pack :: Eq a => [a] -> [[a]]
+pack [] = []
+pack (x:xs) = (x : takeWhile (==x) xs) : pack (dropWhile (==x) xs)
+
+pack' :: Eq a => [a] -> [[a]]
+pack' [] = []
+pack' [x] = [[x]]
+pack' (x:xs) = if x `elem` (head (pack xs))
+  then (x:(head (pack xs))) : (tail (pack xs))
+  else [x] : (pack xs)
+
+{-Problem 10 (Length Encoding)-}
+encode :: Eq a => [a] -> [(Int, a)]
+encode ls = zip (map length (pack ls)) (compress' ls)
+
+{- Soluciones de la pagina -}
+encode' :: Eq a => [a] -> [(Int, a)]
+encode' ls = [(length x, head x) | x <- group ls]
+
+encode'' :: Eq a => [a] -> [(Int, a)]
+encode'' = map (\x -> (length x, head x)) . group
+
+encode''' :: Eq a => [a] -> [(Int, a)]
+encode''' = map ((,) <$> length <*> head) . pack
